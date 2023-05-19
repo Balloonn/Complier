@@ -27,12 +27,12 @@
 letter [a-zA-Z]
 digit [0-9]
 hex [0-9a-f]
-idn {letter} ({letter}|{digit})* ([_.]({letter}|{digit})+)?
+idn {letter}({letter}|{digit})*([_.]({letter}|{digit})+)?
 symbol [+]|[-]|[*]|[/]|[>]|[<]|[=]|[(]|[)]|[;]
 
-int8 0 [0-7]+
+int8 0[0-7]+
 int10 0|([1-9]{digit}*)
-int 16 0x{hex}+
+int16 0x{hex}+
 
 float8 0[0-7]+[.][0-7]+
 float10 (0|[1-9]{digit}*)[.]{digit}+
@@ -41,7 +41,7 @@ float16 0x{hex}+[.]{hex}+
 %%
 {symbol}    {return SYMBOL;}
 {idn}       {return IDN;}
-{int8}    
+{int8}      {return INT8;}
 {int10}     {return INT10;}
 {int16}     {return INT16;}
 {float8}    {return FLOAT8;}
@@ -92,31 +92,31 @@ void myprint(int c, FILE* fp) {
             break;
         case FLOAT10:
             printf("FLOAT10\t\t%s\n", fdtod(yytext));
-            fprintf(fd, "FLOAT10\t\t%s\n", fdtod(yytext))
+            fprintf(fp, "FLOAT10\t\t%s\n", fdtod(yytext));
             break;
         case FLOAT16:
             printf("FLOAT16\t\t%s\n", fhtod(yytext));
-            fprintf(fd, "FLOAT16\t\t%s\n", fhtod(yytext));
+            fprintf(fp, "FLOAT16\t\t%s\n", fhtod(yytext));
             break;
         case IF:
             printf("IF\t\t_\n");
-            fprintf(fd, "IF\t\t_\n");
+            fprintf(fp, "IF\t\t_\n");
             break;
         case THEN:
             printf("THEN\t\t_\n");
-            fprintf(fd, "THEN\t\t_\n");
+            fprintf(fp, "THEN\t\t_\n");
             break;
         case ELSE:
             printf("ELSE\t\t_\n");
-            fprintf(fd, "ELSE\t\t_\n");
+            fprintf(fp, "ELSE\t\t_\n");
             break;
         case WHILE:
             printf("WHILE\t\t_\n");
-            fprintf(fd, "WHILE\t\t_\n");
+            fprintf(fp, "WHILE\t\t_\n");
             break;
         case DO:
             printf("DO\t\t_\n");
-            fprintf(fd, "DO\t\t_\n");
+            fprintf(fp, "DO\t\t_\n");
             break;
     }
 }
@@ -125,7 +125,7 @@ int main() {
     yyin = fopen("in.txt", "r");
     int c;
     FILE* fp = fopen("chart.txt", "w");
-    while(c = yylex()){
+    while((c = yylex())){
         myprint(c, fp);
     }
     return 0;
@@ -146,30 +146,31 @@ char* inttochar(int a, char *s){
     for(int i=0;i<cnt;i++){
         s[i] = tmp[cnt - 1 - i];
     }
-    return s;
+    return *s;
 }
 
 int otod(char *p){
-    int x = 0;
+    int n = 0;
     while(*p != '\0'){
-        x *= 8;
-        x += *p - '0';
+        n *= 8;
+        n += *p - '0';
         p ++;
     }
-    return x;
+    return n;
 }
 
 int dtod(char *p){
     int n = 0;
-    bool negative = false;
+    int negative = 0;
     if(*p == '-') {
-        negative = true;
+        negative = 1;
     }
     while(*p != '\0'){
         n *= 10;
         n += *p - '0';
         p ++;
     }
+    if(negative) n *= -1;
 }
 
 int htod(char *p){
@@ -217,7 +218,7 @@ char* fotod(char *p){
     strcat(s1, ".");
     strcpy(s, s1);
     strcat(s, s2);
-    return s;
+    return *s;
 }
 
 char* fdtod(char *p){
@@ -243,13 +244,13 @@ char* fdtod(char *p){
     strcat(s1, ".");
     strcpy(s, s1);
     strcat(s, s2);
-    return s;
+    return *s;
 }
 
 char* fhtod(char *p){
     int x = 0;
     int y = 0;
-    int fcount = 0;
+    int cnt = 0;
     while(*p != '.'){
         x *= 16;
         if(*p > '9'){
@@ -270,9 +271,12 @@ char* fhtod(char *p){
             y += *p - '0';
         }
         p ++;
-        fcount ++;
+        cnt ++;
     }
-    for(int j=0;j<fcount;j++) y*=0.0625
+    for(int i=0;i<cnt;i++){
+        y *= 1000 / 16;
+        while(y%10 == 0) y/=10;
+    }
     char s[128];
     char s1[128];
     char s2[128];
@@ -281,5 +285,5 @@ char* fhtod(char *p){
     strcat(s1, ".");
     strcpy(s, s1);
     strcat(s, s2);
-    return s;
+    return *s;
 }
