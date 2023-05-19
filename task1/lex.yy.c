@@ -374,10 +374,10 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[41] =
     {   0,
-        0,    0,   16,   14,   15,    1,    4,    4,    2,    2,
-        2,    2,    2,    2,    0,    3,    0,    4,    0,    2,
-        2,    2,    2,    2,    2,    7,    0,    5,    2,    2,
-        2,    2,    6,    0,    2,    2,    2,    8,    2,    0
+        0,    0,   16,   14,   15,    6,    9,    9,    7,    7,
+        7,    7,    7,    7,    0,    8,    0,    9,    0,    7,
+        5,    7,    1,    7,    7,   12,    0,   10,    7,    7,
+        7,    7,   11,    0,    3,    2,    7,   13,    4,    0
     } ;
 
 static yyconst flex_int32_t yy_ec[256] =
@@ -700,7 +700,8 @@ YY_DECL
     
 #line 41 "task1.lex"
 
-#line 704 "lex.yy.c"
+
+#line 705 "lex.yy.c"
 
 	if ( !(yy_init) )
 		{
@@ -785,68 +786,68 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 42 "task1.lex"
-{return SYMBOL;}
+#line 43 "task1.lex"
+{return IF;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 43 "task1.lex"
-{return IDN;}
+#line 44 "task1.lex"
+{return THEN;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 44 "task1.lex"
-{return INT8;}
+#line 45 "task1.lex"
+{return ELSE;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 45 "task1.lex"
-{return INT10;}
+#line 46 "task1.lex"
+{return WHILE;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 46 "task1.lex"
-{return INT16;}
+#line 47 "task1.lex"
+{return DO;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 47 "task1.lex"
-{return FLOAT8;}
+#line 48 "task1.lex"
+{return SYMBOL;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 48 "task1.lex"
-{return FLOAT10;}
+#line 49 "task1.lex"
+{return IDN;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 49 "task1.lex"
-{return FLOAT16;}
+#line 50 "task1.lex"
+{return INT8;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 51 "task1.lex"
-{return IF;}
+{return INT10;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 52 "task1.lex"
-{return THEN;}
+{return INT16;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 53 "task1.lex"
-{return ELSE;}
+{return FLOAT8;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 54 "task1.lex"
-{return WHILE;}
+{return FLOAT10;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 55 "task1.lex"
-{return DO;}
+{return FLOAT16;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
@@ -858,7 +859,7 @@ YY_RULE_SETUP
 #line 57 "task1.lex"
 ECHO;
 	YY_BREAK
-#line 862 "lex.yy.c"
+#line 863 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1859,6 +1860,9 @@ void yyfree (void * ptr )
 
 
 
+
+char * inttochar(int num, char *p);
+char* floattochar(float num, char *p);
 int otod(char *p);
 int dtod(char *p);
 int htod(char *p);
@@ -1879,15 +1883,15 @@ void myprint(int c, FILE* fp) {
             break;
         case INT8:
             printf("INT8\t\t%d\n", otod(yytext));
-            fprintf(fp, "INT8\t\t%d", otod(yytext));
+            fprintf(fp, "INT8\t\t%d\n", otod(yytext));
             break;
         case INT10:
             printf("INT10\t\t%d\n", dtod(yytext));
-            fprintf(fp, "INT10\t\t%d", dtod(yytext));
+            fprintf(fp, "INT10\t\t%d\n", dtod(yytext));
             break;
         case INT16:
             printf("INT16\t\t%d\n", htod(yytext));
-            fprintf(fp, "INT16\t\t%d", htod(yytext));
+            fprintf(fp, "INT16\t\t%d\n", htod(yytext));
             break; 
         case FLOAT8:
             printf("FLOAT8\t\t%s\n", fotod(yytext));
@@ -1934,26 +1938,98 @@ int main() {
     return 0;
 }
 
-char* inttochar(int a, char *s){
-    char tmp[128];
-    int cnt = 0;
-    if(a == 0){
-        cnt ++;
-        tmp[0] = '0';
+
+// char* inttochar(int a, char *s){
+//     char tmp[128];
+//     int cnt = 0;
+//     if(a == 0){
+//         cnt ++;
+//         tmp[0] = '0';
+//     }
+//     while(a){
+//         tmp[cnt] = a % 10 + '0';
+//         a /= 10;
+//         cnt ++;
+//     }
+//     for(int i=0;i<cnt;i++){
+//         s[i] = tmp[cnt - 1 - i];
+//     }
+//     return *s;
+// }
+char* inttochar(int num,char *str)
+{
+    int i = 0;
+    if(num<0) {
+        num = -num;
+        str[i++] = '-';
     }
-    while(a){
-        tmp[cnt] = a % 10 + '0';
-        a /= 10;
-        cnt ++;
+    do {
+        str[i++] = num%10+48;
+        num /= 10;
+    }while(num);
+    str[i] = '\0';
+    int j = 0;
+    if(str[0]=='-') {
+        j = 1;
+        ++i;
     }
-    for(int i=0;i<cnt;i++){
-        s[i] = tmp[cnt - 1 - i];
+    for(;j<i/2;j++) {
+        str[j] = str[j] + str[i-1-j];
+        str[i-1-j] = str[j] - str[i-1-j];
+        str[j] = str[j] - str[i-1-j];
     }
-    return *s;
+    return str;
+}
+
+// char* floattochar(float a, char *s){
+//     char tmp[128];
+//     int cnt = 0;
+//     if(a == 0){
+//         cnt ++;
+//         tmp[0] = '0';
+//     }
+//     while(a){
+//         tmp[cnt] = a % 10 + '0';
+//         a /= 10;
+//         cnt ++;
+//     }
+//     for(int i=0;i<cnt;i++){
+//         s[i] = tmp[cnt - 1 - i];
+//     }
+//     return *s;
+// }
+
+
+char* floattochar(float num,char *str)
+{
+    int i = 0;
+    if(num<0) {
+        num = -num;
+        str[i++] = '-';
+    }
+    do {
+		num *= 10;
+		int tmp=floor(num);
+		num -= tmp;
+        str[i++] = tmp%10+48;
+    }while(num>0);
+    str[i] = '\0';
+    int j = 0;
+    if(str[0]=='-') {
+        j = 1;
+        ++i;
+    }
+    /*for(;j<i/2;j++) {
+        str[j] = str[j] + str[i-1-j];
+        str[i-1-j] = str[j] - str[i-1-j];
+        str[j] = str[j] - str[i-1-j];
+    }*/
+    return str;
 }
 
 int otod(char *p){
     int n = 0;
+    p ++;
     while(*p != '\0'){
         n *= 8;
         n += *p - '0';
@@ -1974,6 +2050,7 @@ int dtod(char *p){
         p ++;
     }
     if(negative) n *= -1;
+    return n;
 }
 
 int htod(char *p){
@@ -1994,7 +2071,7 @@ int htod(char *p){
 
 char* fotod(char *p){
     int x = 0;
-    int y = 0;
+    float y = 0;
     int cnt = 0;
     p ++;
     while(*p != '.'){
@@ -2010,24 +2087,23 @@ char* fotod(char *p){
         p ++;
     }
     for(int i=0;i<cnt;i++){
-        y *= 1000 / 8;
-        while(y%10 == 0) y/=10;
+        y *= 0.125;
     }
     char s[128];
     char s1[128];
     char s2[128];
     inttochar(x, s1);
-    inttochar(y, s2);
+    floattochar(y, s2);
     strcat(s1, ".");
     strcpy(s, s1);
     strcat(s, s2);
-    return *s;
+    return s;
 }
 
 char* fdtod(char *p){
     int x = 0;
     int y = 0;
-    p += 2;
+    int cnt = 0;
     while(*p != '.'){
         x *= 16;
         x += *p - '0';
@@ -2038,22 +2114,27 @@ char* fdtod(char *p){
         y *= 10;
         y += *p -'0';
         p ++;
+        cnt ++;
+    }
+    for(int i=0;i<cnt;i++){
+        y *= 0.1;
     }
     char s[128];
     char s1[128];
     char s2[128];
     inttochar(x, s1);
-    inttochar(y, s2);
+    floattochar(y, s2);
     strcat(s1, ".");
     strcpy(s, s1);
     strcat(s, s2);
-    return *s;
+    return s;
 }
 
 char* fhtod(char *p){
     int x = 0;
-    int y = 0;
+    float y = 0;
     int cnt = 0;
+    p += 2;
     while(*p != '.'){
         x *= 16;
         if(*p > '9'){
@@ -2077,17 +2158,16 @@ char* fhtod(char *p){
         cnt ++;
     }
     for(int i=0;i<cnt;i++){
-        y *= 1000 / 16;
-        while(y%10 == 0) y/=10;
+        y *= 0.0625;
     }
     char s[128];
     char s1[128];
     char s2[128];
     inttochar(x, s1);
-    inttochar(y, s2);
+    floattochar(y, s2);
     strcat(s1, ".");
     strcpy(s, s1);
     strcat(s, s2);
-    return *s;
+    return s;
 }
 

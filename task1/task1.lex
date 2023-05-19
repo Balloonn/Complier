@@ -39,6 +39,12 @@ float10 (0|[1-9]{digit}*)[.]{digit}+
 float16 0x{hex}+[.]{hex}+
 
 %%
+
+if          {return IF;}
+then        {return THEN;}
+else        {return ELSE;}
+while       {return WHILE;}
+do          {return DO;}
 {symbol}    {return SYMBOL;}
 {idn}       {return IDN;}
 {int8}      {return INT8;}
@@ -47,15 +53,12 @@ float16 0x{hex}+[.]{hex}+
 {float8}    {return FLOAT8;}
 {float10}   {return FLOAT10;}
 {float16}   {return FLOAT16;}
-
-if          {return IF;}
-then        {return THEN;}
-else        {return ELSE;}
-while       {return WHILE;}
-do          {return DO;}
 .           {;}
 %%
 
+
+char * inttochar(int num, char *p);
+char* floattochar(float num, char *p);
 int otod(char *p);
 int dtod(char *p);
 int htod(char *p);
@@ -76,15 +79,15 @@ void myprint(int c, FILE* fp) {
             break;
         case INT8:
             printf("INT8\t\t%d\n", otod(yytext));
-            fprintf(fp, "INT8\t\t%d", otod(yytext));
+            fprintf(fp, "INT8\t\t%d\n", otod(yytext));
             break;
         case INT10:
             printf("INT10\t\t%d\n", dtod(yytext));
-            fprintf(fp, "INT10\t\t%d", dtod(yytext));
+            fprintf(fp, "INT10\t\t%d\n", dtod(yytext));
             break;
         case INT16:
             printf("INT16\t\t%d\n", htod(yytext));
-            fprintf(fp, "INT16\t\t%d", htod(yytext));
+            fprintf(fp, "INT16\t\t%d\n", htod(yytext));
             break; 
         case FLOAT8:
             printf("FLOAT8\t\t%s\n", fotod(yytext));
@@ -131,26 +134,98 @@ int main() {
     return 0;
 }
 
-char* inttochar(int a, char *s){
-    char tmp[128];
-    int cnt = 0;
-    if(a == 0){
-        cnt ++;
-        tmp[0] = '0';
+
+// char* inttochar(int a, char *s){
+//     char tmp[128];
+//     int cnt = 0;
+//     if(a == 0){
+//         cnt ++;
+//         tmp[0] = '0';
+//     }
+//     while(a){
+//         tmp[cnt] = a % 10 + '0';
+//         a /= 10;
+//         cnt ++;
+//     }
+//     for(int i=0;i<cnt;i++){
+//         s[i] = tmp[cnt - 1 - i];
+//     }
+//     return *s;
+// }
+char* inttochar(int num,char *str)
+{
+    int i = 0;
+    if(num<0) {
+        num = -num;
+        str[i++] = '-';
     }
-    while(a){
-        tmp[cnt] = a % 10 + '0';
-        a /= 10;
-        cnt ++;
+    do {
+        str[i++] = num%10+48;
+        num /= 10;
+    }while(num);
+    str[i] = '\0';
+    int j = 0;
+    if(str[0]=='-') {
+        j = 1;
+        ++i;
     }
-    for(int i=0;i<cnt;i++){
-        s[i] = tmp[cnt - 1 - i];
+    for(;j<i/2;j++) {
+        str[j] = str[j] + str[i-1-j];
+        str[i-1-j] = str[j] - str[i-1-j];
+        str[j] = str[j] - str[i-1-j];
     }
-    return *s;
+    return str;
+}
+
+// char* floattochar(float a, char *s){
+//     char tmp[128];
+//     int cnt = 0;
+//     if(a == 0){
+//         cnt ++;
+//         tmp[0] = '0';
+//     }
+//     while(a){
+//         tmp[cnt] = a % 10 + '0';
+//         a /= 10;
+//         cnt ++;
+//     }
+//     for(int i=0;i<cnt;i++){
+//         s[i] = tmp[cnt - 1 - i];
+//     }
+//     return *s;
+// }
+
+
+char* floattochar(float num,char *str)
+{
+    int i = 0;
+    if(num<0) {
+        num = -num;
+        str[i++] = '-';
+    }
+    do {
+		num *= 10;
+		int tmp=floor(num);
+		num -= tmp;
+        str[i++] = tmp%10+48;
+    }while(num>0);
+    str[i] = '\0';
+    int j = 0;
+    if(str[0]=='-') {
+        j = 1;
+        ++i;
+    }
+    /*for(;j<i/2;j++) {
+        str[j] = str[j] + str[i-1-j];
+        str[i-1-j] = str[j] - str[i-1-j];
+        str[j] = str[j] - str[i-1-j];
+    }*/
+    return str;
 }
 
 int otod(char *p){
     int n = 0;
+    p ++;
     while(*p != '\0'){
         n *= 8;
         n += *p - '0';
@@ -171,6 +246,7 @@ int dtod(char *p){
         p ++;
     }
     if(negative) n *= -1;
+    return n;
 }
 
 int htod(char *p){
@@ -191,7 +267,7 @@ int htod(char *p){
 
 char* fotod(char *p){
     int x = 0;
-    int y = 0;
+    float y = 0;
     int cnt = 0;
     p ++;
     while(*p != '.'){
@@ -207,24 +283,23 @@ char* fotod(char *p){
         p ++;
     }
     for(int i=0;i<cnt;i++){
-        y *= 1000 / 8;
-        while(y%10 == 0) y/=10;
+        y *= 0.125;
     }
     char s[128];
     char s1[128];
     char s2[128];
     inttochar(x, s1);
-    inttochar(y, s2);
+    floattochar(y, s2);
     strcat(s1, ".");
     strcpy(s, s1);
     strcat(s, s2);
-    return *s;
+    return s;
 }
 
 char* fdtod(char *p){
     int x = 0;
     int y = 0;
-    p += 2;
+    int cnt = 0;
     while(*p != '.'){
         x *= 16;
         x += *p - '0';
@@ -235,22 +310,27 @@ char* fdtod(char *p){
         y *= 10;
         y += *p -'0';
         p ++;
+        cnt ++;
+    }
+    for(int i=0;i<cnt;i++){
+        y *= 0.1;
     }
     char s[128];
     char s1[128];
     char s2[128];
     inttochar(x, s1);
-    inttochar(y, s2);
+    floattochar(y, s2);
     strcat(s1, ".");
     strcpy(s, s1);
     strcat(s, s2);
-    return *s;
+    return s;
 }
 
 char* fhtod(char *p){
     int x = 0;
-    int y = 0;
+    float y = 0;
     int cnt = 0;
+    p += 2;
     while(*p != '.'){
         x *= 16;
         if(*p > '9'){
@@ -274,16 +354,15 @@ char* fhtod(char *p){
         cnt ++;
     }
     for(int i=0;i<cnt;i++){
-        y *= 1000 / 16;
-        while(y%10 == 0) y/=10;
+        y *= 0.0625;
     }
     char s[128];
     char s1[128];
     char s2[128];
     inttochar(x, s1);
-    inttochar(y, s2);
+    floattochar(y, s2);
     strcat(s1, ".");
     strcpy(s, s1);
     strcat(s, s2);
-    return *s;
+    return s;
 }
