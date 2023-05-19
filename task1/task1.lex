@@ -131,6 +131,155 @@ int main() {
     return 0;
 }
 
-int otod(char *p) {
-    
+char* inttochar(int a, char *s){
+    char tmp[128];
+    int cnt = 0;
+    if(a == 0){
+        cnt ++;
+        tmp[0] = '0';
+    }
+    while(a){
+        tmp[cnt] = a % 10 + '0';
+        a /= 10;
+        cnt ++;
+    }
+    for(int i=0;i<cnt;i++){
+        s[i] = tmp[cnt - 1 - i];
+    }
+    return s;
+}
+
+int otod(char *p){
+    int x = 0;
+    while(*p != '\0'){
+        x *= 8;
+        x += *p - '0';
+        p ++;
+    }
+    return x;
+}
+
+int dtod(char *p){
+    int n = 0;
+    bool negative = false;
+    if(*p == '-') {
+        negative = true;
+    }
+    while(*p != '\0'){
+        n *= 10;
+        n += *p - '0';
+        p ++;
+    }
+}
+
+int htod(char *p){
+    int n = 0;
+    p += 2;
+    while(*p != '\0'){
+        n *= 16;
+        if(*p > '9'){
+            n += (10 + *p - 'a');
+        }
+        else {
+            n += *p - '0';
+        }
+        p ++;
+    }
+    return n;
+}
+
+char* fotod(char *p){
+    int x = 0;
+    int y = 0;
+    int cnt = 0;
+    p ++;
+    while(*p != '.'){
+        x *= 8;
+        x += *p - '0';
+        p ++;
+    }
+    p ++;
+    while(*p != '\0'){
+        y *= 8;
+        y += *p -'0';
+        cnt ++;
+        p ++;
+    }
+    for(int i=0;i<cnt;i++){
+        y *= 1000 / 8;
+        while(y%10 == 0) y/=10;
+    }
+    char s[128];
+    char s1[128];
+    char s2[128];
+    inttochar(x, s1);
+    inttochar(y, s2);
+    strcat(s1, ".");
+    strcpy(s, s1);
+    strcat(s, s2);
+    return s;
+}
+
+char* fdtod(char *p){
+    int x = 0;
+    int y = 0;
+    p += 2;
+    while(*p != '.'){
+        x *= 16;
+        x += *p - '0';
+        p ++;
+    }
+    p ++;
+    while(*p != '\0'){
+        y *= 10;
+        y += *p -'0';
+        p ++;
+    }
+    char s[128];
+    char s1[128];
+    char s2[128];
+    inttochar(x, s1);
+    inttochar(y, s2);
+    strcat(s1, ".");
+    strcpy(s, s1);
+    strcat(s, s2);
+    return s;
+}
+
+char* fhtod(char *p){
+    int x = 0;
+    int y = 0;
+    int fcount = 0;
+    while(*p != '.'){
+        x *= 16;
+        if(*p > '9'){
+            x += (10 + *p - 'a');
+        }
+        else {
+            x += *p - '0';
+        }
+        p ++;
+    }
+    p ++;
+    while(*p != '\0'){
+        y *= 16;
+        if(*p > '9'){
+            y += (10 + *p - 'a');
+        }
+        else {
+            y += *p - '0';
+        }
+        p ++;
+        fcount ++;
+    }
+    for(int j=0;j<fcount;j++) y*=0.0625
+    char s[128];
+    char s1[128];
+    char s2[128];
+    inttochar(x, s1);
+    inttochar(y, s2);
+    strcat(s1, ".");
+    strcpy(s, s1);
+    strcat(s, s2);
+    return s;
 }
