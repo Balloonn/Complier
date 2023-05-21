@@ -1931,100 +1931,38 @@ void myprint(int c, FILE* fp) {
 int main() {
     yyin = fopen("in.txt", "r");
     int c;
-    FILE* fp = fopen("chart.txt", "w");
+    FILE* fp = fopen("out.txt", "w");
     while((c = yylex())){
         myprint(c, fp);
     }
     return 0;
 }
 
-
-// char* inttochar(int a, char *s){
-//     char tmp[128];
-//     int cnt = 0;
-//     if(a == 0){
-//         cnt ++;
-//         tmp[0] = '0';
-//     }
-//     while(a){
-//         tmp[cnt] = a % 10 + '0';
-//         a /= 10;
-//         cnt ++;
-//     }
-//     for(int i=0;i<cnt;i++){
-//         s[i] = tmp[cnt - 1 - i];
-//     }
-//     return *s;
-// }
-char* inttochar(int num,char *str)
-{
-    int i = 0;
-    if(num<0) {
-        num = -num;
-        str[i++] = '-';
-    }
+char* inttochar(int n, char *s){
+    int cnt = 0;
     do {
-        str[i++] = num%10+48;
-        num /= 10;
-    }while(num);
-    str[i] = '\0';
-    int j = 0;
-    if(str[0]=='-') {
-        j = 1;
-        ++i;
+        s[cnt ++] = n % 10 + '0';
+        n /= 10;
+    }while(n);
+    s[cnt] = '\0';
+    for(int j = 0; j < cnt/2; j ++) {
+        s[j] = s[j] + s[cnt-1-j];
+        s[cnt-1-j] = s[j] - s[cnt-1-j];
+        s[j] = s[j] - s[cnt-1-j];
     }
-    for(;j<i/2;j++) {
-        str[j] = str[j] + str[i-1-j];
-        str[i-1-j] = str[j] - str[i-1-j];
-        str[j] = str[j] - str[i-1-j];
-    }
-    return str;
+    return s;
 }
 
-// char* floattochar(float a, char *s){
-//     char tmp[128];
-//     int cnt = 0;
-//     if(a == 0){
-//         cnt ++;
-//         tmp[0] = '0';
-//     }
-//     while(a){
-//         tmp[cnt] = a % 10 + '0';
-//         a /= 10;
-//         cnt ++;
-//     }
-//     for(int i=0;i<cnt;i++){
-//         s[i] = tmp[cnt - 1 - i];
-//     }
-//     return *s;
-// }
-
-
-char* floattochar(float num,char *str)
-{
-    int i = 0;
-    if(num<0) {
-        num = -num;
-        str[i++] = '-';
-    }
+char* floattochar(float n, char *s){
+    int cnt = 0;
     do {
-		num *= 10;
-		int tmp=floor(num);
-		num -= tmp;
-        str[i++] = tmp%10+48;
-    }while(num>0);
-    str[i] = '\0';
-    int j = 0;
-    if(str[0]=='-') {
-        j = 1;
-        ++i;
-    }
-    /*for(;j<i/2;j++) {
-        str[j] = str[j] + str[i-1-j];
-        str[i-1-j] = str[j] - str[i-1-j];
-        str[j] = str[j] - str[i-1-j];
-    }*/
-    return str;
+        n *= 10;
+        int tmp = floor(n);
+        n -= tmp;
+        s[cnt++] = tmp + '0';
+    }while(n);
+    s[cnt++] = '\0';
+    return s;
 }
 
 int otod(char *p){
@@ -2040,16 +1978,11 @@ int otod(char *p){
 
 int dtod(char *p){
     int n = 0;
-    int negative = 0;
-    if(*p == '-') {
-        negative = 1;
-    }
     while(*p != '\0'){
         n *= 10;
         n += *p - '0';
         p ++;
     }
-    if(negative) n *= -1;
     return n;
 }
 
@@ -2105,7 +2038,7 @@ char* fdtod(char *p){
     int y = 0;
     int cnt = 0;
     while(*p != '.'){
-        x *= 16;
+        x *= 10;
         x += *p - '0';
         p ++;
     }
